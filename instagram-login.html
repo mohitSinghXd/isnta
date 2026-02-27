@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Instagram</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #fff;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 360px;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-wrap { margin-bottom: 12px; animation: fadeDown 0.6s ease; }
+  .logo-icon { width: 64px; height: 64px; }
+
+  .card {
+    width: 100%;
+    background: #121212;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 28px 24px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    animation: fadeUp 0.5s ease 0.1s both;
+  }
+
+  .tabs {
+    display: flex; width: 100%;
+    border-bottom: 1px solid #333; margin-bottom: 4px;
+  }
+  .tab-btn {
+    flex: 1; padding: 10px; background: none; border: none;
+    color: #666; font-size: 13px; font-weight: 600; cursor: pointer;
+    border-bottom: 2px solid transparent; transition: all 0.2s;
+  }
+  .tab-btn.active { color: #fff; border-bottom-color: #fff; }
+
+  .toast {
+    width: 100%; padding: 10px 14px; border-radius: 8px;
+    font-size: 13px; text-align: center; display: none; animation: fadeUp 0.3s ease;
+  }
+  .toast.error { background: #3a0f0f; border: 1px solid #7a2020; color: #ff6b6b; }
+  .toast.success { background: #0a2a0a; border: 1px solid #1e6b1e; color: #6bff6b; }
+
+  .input-group { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+  .input-wrap { position: relative; width: 100%; }
+
+  input {
+    width: 100%; background: #1c1c1c; border: 1px solid #333;
+    border-radius: 8px; padding: 13px 44px 13px 14px;
+    color: #fff; font-size: 14px; outline: none; transition: border-color 0.2s;
+  }
+  input::placeholder { color: #666; }
+  input:focus { border-color: #555; background: #222; }
+
+  .eye-btn {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: #aaa; font-size: 15px; padding: 4px;
+  }
+
+  .btn-login {
+    width: 100%; background: #0095f6; color: #fff; border: none;
+    border-radius: 8px; padding: 13px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 4px;
+  }
+  .btn-login:hover { background: #1aa3ff; }
+  .btn-login:active { transform: scale(0.98); }
+  .btn-login:disabled { background: #444; cursor: not-allowed; }
+
+  .forgot { color: #e0e0e0; font-size: 12px; text-decoration: none; cursor: pointer; }
+
+  .divider { width: 100%; display: flex; align-items: center; gap: 12px; margin: 4px 0; }
+  .divider hr { flex: 1; border: none; border-top: 1px solid #333; }
+  .divider span { color: #666; font-size: 12px; font-weight: 600; letter-spacing: 1px; }
+
+  .btn-fb {
+    width: 100%; background: none; border: none; color: #4e9ded;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 6px; border-radius: 8px; transition: background 0.15s;
+  }
+  .btn-fb:hover { background: #1a1a1a; }
+  .fb-icon {
+    width: 20px; height: 20px; background: #1877f2; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+
+  .signup-card {
+    width: 100%; background: #121212; border: 1px solid #262626;
+    border-radius: 12px; padding: 18px; text-align: center;
+    font-size: 14px; color: #aaa; animation: fadeUp 0.5s ease 0.2s both;
+  }
+  .signup-card a { color: #0095f6; font-weight: 600; text-decoration: none; cursor: pointer; }
+
+  .app-download {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 12px; margin-top: 8px; animation: fadeUp 0.5s ease 0.3s both;
+  }
+  .app-download p { font-size: 13px; color: #aaa; }
+  .store-btns { display: flex; gap: 8px; }
+  .store-btn {
+    background: #1c1c1c; border: 1px solid #333; border-radius: 8px;
+    padding: 8px 14px; color: #fff; font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; text-decoration: none;
+    transition: background 0.15s;
+  }
+  .store-btn span { font-size: 16px; }
+
+  .meta-footer { margin-top: 16px; color: #555; font-size: 12px; animation: fadeUp 0.5s ease 0.4s both; }
+
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="logo-wrap">
+    <svg class="logo-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="ig1" cx="30%" cy="107%" r="150%">
+          <stop offset="0%" stop-color="#ffd600"/>
+          <stop offset="50%" stop-color="#ff0069"/>
+          <stop offset="100%" stop-color="#d300c4"/>
+        </radialGradient>
+        <radialGradient id="ig2" cx="0%" cy="100%" r="100%">
+          <stop offset="0%" stop-color="#ff7a00"/>
+          <stop offset="100%" stop-color="#ff0069" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="64" height="64" rx="16" fill="url(#ig1)"/>
+      <rect width="64" height="64" rx="16" fill="url(#ig2)"/>
+      <rect x="14" y="14" width="36" height="36" rx="10" stroke="#fff" stroke-width="3" fill="none"/>
+      <circle cx="32" cy="32" r="9" stroke="#fff" stroke-width="3" fill="none"/>
+      <circle cx="44" cy="20" r="2.5" fill="#fff"/>
+    </svg>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Log In</button>
+      <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <div class="input-group">
+      <div class="input-wrap">
+        <input type="text" placeholder="Username" id="user">
+      </div>
+      <div class="input-wrap">
+        <input type="password" placeholder="Password" id="pass">
+        <button class="eye-btn" onclick="togglePass()" id="eyeBtn">👁️</button>
+      </div>
+    </div>
+
+    <button class="btn-login" id="mainBtn" onclick="handleSubmit()">Log in</button>
+
+    <a class="forgot" id="forgotLink">Forgot password?</a>
+
+    <div class="divider" id="dividerSection">
+      <hr><span>OR</span><hr>
+    </div>
+
+    <button class="btn-fb" id="fbBtn">
+      <div class="fb-icon">f</div>
+      Log in with Facebook
+    </button>
+  </div>
+
+  <div class="signup-card">
+    <span id="switchText">Don't have an account?</span>
+    <a onclick="switchTab(currentTab === 'login' ? 'signup' : 'login')" id="switchLink">Sign up</a>
+  </div>
+
+  <div class="app-download">
+    <p>Get the app.</p>
+    <div class="store-btns">
+      <a class="store-btn"><span>🍎</span> App Store</a>
+      <a class="store-btn"><span>▶</span> Google Play</a>
+    </div>
+  </div>
+
+  <div class="meta-footer">∞ Meta</div>
+</div>
+
+<script>
+  let currentTab = 'login';
+  let passVisible = false;
+
+  // ⚠️ Change this if your server runs on different port
+  const API_BASE = 'http://localhost:3000/api';
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    document.getElementById('mainBtn').textContent = tab === 'login' ? 'Log in' : 'Sign up';
+    document.getElementById('forgotLink').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('dividerSection').style.display = tab === 'login' ? 'flex' : 'none';
+    document.getElementById('fbBtn').style.display = tab === 'login' ? 'flex' : 'none';
+    document.getElementById('switchText').textContent = tab === 'login' ? "Don't have an account?" : "Already have an account?";
+    document.getElementById('switchLink').textContent = tab === 'login' ? 'Sign up' : 'Log in';
+    hideToast();
+    document.getElementById('user').value = '';
+    document.getElementById('pass').value = '';
+  }
+
+  function togglePass() {
+    passVisible = !passVisible;
+    document.getElementById('pass').type = passVisible ? 'text' : 'password';
+    document.getElementById('eyeBtn').textContent = passVisible ? '🙈' : '👁️';
+  }
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type}`;
+    t.style.display = 'block';
+  }
+
+  function hideToast() {
+    document.getElementById('toast').style.display = 'none';
+  }
+
+  async function handleSubmit() {
+    const username = document.getElementById('user').value.trim();
+    const password = document.getElementById('pass').value.trim();
+    const btn = document.getElementById('mainBtn');
+
+    if (!username || !password) {
+      showToast('Please enter username and password', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = currentTab === 'login' ? 'Logging in...' : 'Creating account...';
+    hideToast();
+
+    try {
+      const endpoint = currentTab === 'login' ? '/login' : '/register';
+      const res = await fetch(API_BASE + endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        showToast(data.message, 'success');
+        document.getElementById('user').value = '';
+        document.getElementById('pass').value = '';
+      } else {
+        showToast(data.error || 'Something went wrong', 'error');
+      }
+    } catch (err) {
+      showToast('❌ Cannot connect to server. Is server.js running?', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = currentTab === 'login' ? 'Log in' : 'Sign up';
+    }
+  }
+</script>
+</body>
+</html>
